@@ -6,6 +6,15 @@
       "type": "timerTrigger",
       "direction": "in",
       "schedule": "0 */1 * * * *"
+    },
+    {
+      "name": "timeValue",
+      "type": "documentDB",
+      "databaseName": "testing1",
+      "collectionName": "timeValues",
+      "createIfNotExists": true,
+      "connection": "documentDBConnectionString",
+      "direction": "out"
     }
   ]
 }
