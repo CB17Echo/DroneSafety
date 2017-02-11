@@ -11,6 +11,15 @@
       "name": "res",
       "type": "http",
       "direction": "out"
+    },
+    {
+      "name": "polygons",
+      "type": "documentDB",
+      "databaseName": "MockData",
+      "collectionName": "polygons",
+      "createIfNotExists": true,
+      "connection": "DocumentDBConnectionString",
+      "direction": "out"
     }
   ]
 }
