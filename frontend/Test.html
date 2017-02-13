@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Use correct character set. -->
+  <meta charset="utf-8">
+  <!-- Tell IE to use the latest, best version. -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+  <title>Hello World!</title>
+  <script src="Cesium/Cesium.js"></script>
+  <script src="CesiumHeatmap.js"></script>
+  
+  <style>
+      @import url(Cesium/Widgets/widgets.css);
+      html, body, #cesiumContainer {
+          width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
+      }
+  </style>
+</head>
+<body>
+  <div id="cesiumContainer"></div>
+  <script>
+    var viewer = new Cesium.Viewer('cesiumContainer');
+    CesiumHeatmap.defaults.useEntitiesIfAvailable = false;
+    
+    var boundingBox = {
+        north: 52.205337, 
+        east: 0.121817, 
+        south: 52.200337, 
+        west: 0.021817
+    };
+    
+    // CesiumHeatmap.create(Cesium instance, Bounding box, heatmap.js options
+    var heatmap = CesiumHeatmap.create(viewer, boundingBox, {});
+
+    //heatmap.setWG84Data(minimum value, max value, list of heatmap.js data points)
+    heatmap.setWGS84Data(0, 0, [{ x: 0.1218, y: 52.2053, value: 5}]);
+  </script>
+</body>
+</html>
