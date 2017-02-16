@@ -74,8 +74,5 @@ namespace DroneSafety
                 }
             return JsonConvert.SerializeObject(list);
         }
-
-
-
     }
 }

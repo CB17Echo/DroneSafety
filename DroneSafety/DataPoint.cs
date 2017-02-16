@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents.Spatial;
+using Newtonsoft.Json;
 
 namespace DroneSafety
 {
-
-    class DataPoint
+    public class DataPoint
     {
-        public string DataType;
-        public int Time;
-        public Geometry Location;
-        public int Radius;
-        public int Data_ID;
-    }
+        [JsonProperty(PropertyName = "id")]
+        public string DataType { get; set; }
+        public string Shape { get; set; }
+        public int Time { get; set; }
+        public int Severity { get; set; }
+        public Geometry Location { get; set; }
+        public int Data_ID { get; set; }
 
+    }
 }

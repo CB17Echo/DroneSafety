@@ -7,6 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+// Non Static
+// Create database if doesn't exist
+// Create collection if does not exist
+// Seperate collection for each data source
+// DataPoint DataType is the Collection Name
+
 namespace DroneSafety
 {
     class DocDatabase
@@ -14,8 +20,8 @@ namespace DroneSafety
         private const string EndpointUrl = "https://localhost:8081";
         private const string AuthorizationKey = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
 
-        private const string DatabaseName = "DataPoints";
-        private const string CollectionName = "Data";
+        private static string DatabaseName = "DataPoints";
+        private static string CollectionName = "Data";
 
 
         private static DocumentClient mClient;
@@ -23,9 +29,9 @@ namespace DroneSafety
         private static DocumentCollection mCollection;
 
 
-
+        
         public static List<DataPoint> GetDataPoints(Point location, int radius)
-        {
+        {            
             var query = mClient.CreateDocumentQuery<DataPoint>(mCollection.SelfLink, new FeedOptions { EnableScanInQuery = true }).Where(c => c.Location.Distance(location) < radius);
             List<DataPoint> list = new List<DataPoint>();
 
@@ -63,7 +69,8 @@ namespace DroneSafety
         }
         // Create collection ... 
         private static async Task<Document> CreateDocument(DocumentClient client, object documentObject)
-        {
+        {   
+
             var result = await client.CreateDocumentAsync(mCollection.SelfLink, documentObject);
             var document = result.Resource;
             return result;

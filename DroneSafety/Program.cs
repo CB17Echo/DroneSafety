@@ -19,8 +19,7 @@ namespace DroneSafety
         
         private static async Task FileToDataPoints(string filename)
         {
-            // using (StreamReader r = new StreamReader(filename))
-            using (StreamReader r = new StreamReader("D:/Group Project/bus_positions_2016-12/12/01/1480550426_2016-12-01-00-00-26.json"))
+            using (StreamReader r = new StreamReader(filename))
             {
                 string json = r.ReadToEnd();
                 dynamic array = JsonConvert.DeserializeObject(json);
@@ -31,6 +30,8 @@ namespace DroneSafety
                 {
                     DataPoint p = new DataPoint();
                     p.DataType = "Bus Data";
+                    p.Shape = "Point";
+                    p.Severity = 2;
                     p.Location = new Point((float) item.latitude, (float) item.longitude);
                     p.Time = item.received_timestamp;
                     p.Data_ID = item.vehicle_id;
@@ -41,17 +42,13 @@ namespace DroneSafety
             }
         }
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
+            string file = "";
             try
             {
                 DocDatabase.CreateDocumentClient();
-                List<DataPoint> list = DocDatabase.GetDataPoints(new Point(51.90286636352539, -0.22166046500205994), 10000);
-                foreach (DataPoint datapoint in list)
-                {
-                    Console.WriteLine(datapoint.Data_ID);
-                }
-                Console.ReadLine();
+                await AddFiles(file);
             } catch (Exception e)
             {
                 Console.WriteLine(e);
@@ -59,9 +56,9 @@ namespace DroneSafety
             }
         }
 
-        private static async Task getPaths()
+        private static async Task AddFiles(string path)
         {
-            String[] allfiles = System.IO.Directory.GetFiles("D:\\Group Project\\", "*.json*", System.IO.SearchOption.AllDirectories);
+            String[] allfiles = System.IO.Directory.GetFiles(path, "*.json*", System.IO.SearchOption.AllDirectories);
 
             foreach (string file in allfiles)
             {
