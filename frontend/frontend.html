@@ -10,6 +10,7 @@
   <title>Frontend</title>
   <script src="Cesium/Cesium.js"></script>
   <script src="CesiumHeatmap.js"></script>
+  <script src="jquery.js"></script>
   <style>
       @import url(Cesium/Widgets/widgets.css);
       html, body, #cesiumContainer {
@@ -76,9 +77,25 @@
   };
 
   var heatmap = CesiumHeatmap.create(viewer, boundingBox, {});
+  var url = "http://localhost:8080/DroneSafety/frontend/TestHeatmap.json";
+  //var url = "http://localhost:17272/api/heatmaps";
   
-  heatmap.setWGS84Data(0,100,[{x:0.11838197708129883, y: 52.20530548445898, value: 100},{x: 0.11780261993408203, y: 52.202885820688415, value: 80},{x: 0.12214243412017822, y: 52.20537123435309, value: 60}]);
+  $.getJSON(url, {
+          DecimalPlaceAccuracy: 4,
+          CornerOneLat : boundingBox.north,
+          CornerOneLon : boundingBox.east,
+          CornerTwoLat : boundingBox.south,
+          CornerTwoLon : boundingBox.west
+      }, function (data, testStatus, jqXHR) {
+          var datapoints = [];
+          for (var i = 0; i < data.NumSources; i++) {
+              datapoints = datapoints.concat(data.Heatmaps[data.Sources[i]]);
+          }
+          heatmap.setWGS84Data(0, 20, datapoints);
+      });
 
+  //heatmap.setWGS84Data(0,100,[{x:0.11838197708129883, y: 52.20530548445898, value: 100},{x: 0.11780261993408203, y: 52.202885820688415, value: 80},{x: 0.12214243412017822, y: 52.20537123435309, value: 60}]);
+    
   //heatmap.show(true);
   
   </script>
