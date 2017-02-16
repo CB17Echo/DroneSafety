@@ -34,7 +34,6 @@ namespace DroneSafety
                     p.Severity = 2;
                     p.Location = new Point((float) item.latitude, (float) item.longitude);
                     p.Time = item.received_timestamp;
-                    p.Data_ID = item.vehicle_id;
                     list.Add(p);
                 }
 
@@ -42,13 +41,15 @@ namespace DroneSafety
             }
         }
 
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
-            string file = "";
+            string file = "C:\\Users\\mudit\\Documents\\Development\\DroneSafety\\Data\\1480550426_2016-12-01-00-00-26.json";
             try
             {
                 DocDatabase.CreateDocumentClient();
-                await AddFiles(file);
+                Console.WriteLine("Written");
+                Console.ReadLine();
+                FileToDataPoints(file).Wait();
             } catch (Exception e)
             {
                 Console.WriteLine(e);

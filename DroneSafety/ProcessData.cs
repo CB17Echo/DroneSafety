@@ -9,7 +9,7 @@ namespace DroneSafety
 {
     class ProcessData
     {
-        private HeatMap mHeatMap;
+        private HeatMap mHeatMap = null;
 
         public void ProcessDataPoints(List<DataPoint> datapoints)
         {
