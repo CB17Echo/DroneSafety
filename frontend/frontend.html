@@ -7,7 +7,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
-  <title>Hello World!</title>
+  <title>Frontend</title>
   <script src="Cesium/Cesium.js"></script>
   <script src="CesiumHeatmap.js"></script>
   <style>
@@ -22,7 +22,8 @@
   <script>
     Cesium.BingMapsApi.defaultKey = 'AnwQH63qS8zI8PX7aDuQDyLi_HAcDi_I5qG28z7cTOU2I2F-pbQ82cjbDMgJaYrf';
     var viewer = new Cesium.Viewer('cesiumContainer');
-
+    viewer.clock.currentTime = Cesium.JulianDate.fromIso8601("2017-02-02");
+    viewer.clock.multiplier = 1.0;
     
     var cambridge = viewer.entities.add({
     name : 'Cambridge',
@@ -40,8 +41,9 @@
       outlineColor : Cesium.Color.RED
     }
   });
-  
-  /*for (i=0;i<4;i++){
+
+ /* 
+  for (i=0;i<4;i++){
      var entity = viewer.entities.add({
     position: Cesium.Cartesian3.fromDegrees(0.11822104454040527, 52.20531863444556),
     ellipse : {
@@ -57,8 +59,8 @@
   viewer.zoomTo(viewer.entities);
 
   var ellipse = entity.ellipse; // For upcoming examples
-
-  */
+*/
+  
 
   var heading = Cesium.Math.toRadians(0);
   var pitch = Cesium.Math.toRadians(-90);
@@ -74,9 +76,9 @@
   };
 
   var heatmap = CesiumHeatmap.create(viewer, boundingBox, {});
-
+  
   heatmap.setWGS84Data(0,100,[{x:0.11838197708129883, y: 52.20530548445898, value: 100},{x: 0.11780261993408203, y: 52.202885820688415, value: 80},{x: 0.12214243412017822, y: 52.20537123435309, value: 60}]);
-    
+
   //heatmap.show(true);
   
   </script>
