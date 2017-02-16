@@ -1,10 +1,10 @@
 {
-  "NumSources": 2,
-  "Sources": [
+  "numSources": 2,
+  "sources": [
     "Buses",
     "WiFi"
   ],
-  "Heatmaps": {
+  "heatmaps": {
     "Buses": [
       {
         "x": 0.11838197708129883,
