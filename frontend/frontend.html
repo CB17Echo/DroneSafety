@@ -76,7 +76,10 @@
 
   var heatmap = CesiumHeatmap.create(viewer, boundingBox, {});
 
-  $.getJSON("http://localhost:17272/api/heatmaps", {
+  var url = "http://localhost:8080/DroneSafety/frontend/TestHeatmap.json";
+  //var url = "http://localhost:17272/api/heatmaps";
+  
+  $.getJSON(url, {
           DecimalPlaceAccuracy: 4,
           CornerOneLat : boundingBox.north,
           CornerOneLon : boundingBox.east,
@@ -85,7 +88,7 @@
       }, function (data, testStatus, jqXHR) {
           var datapoints = [];
           for (var i = 0; i < data.NumSources; i++) {
-              datapoints = datapoints.concat(data.Heatmaps[Sources[i]]);
+              datapoints = datapoints.concat(data.Heatmaps[data.Sources[i]]);
           }
           heatmap.setWGS84Data(0, 20, datapoints);
       });
