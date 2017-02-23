@@ -1,6 +1,7 @@
 ﻿#load "../Models/Circle.csx"
 #load "../Models/WiFi.csx"
 #r "Microsoft.Azure.WebJobs.Extensions.DocumentDB"
+using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using System;
 using System.Configuration;
@@ -12,10 +13,13 @@ public static void Run(TimerInfo myTimer,
 {
     log.Info($"C# Timer trigger function executed at: {DateTime.Now}");
     DocumentClient client = new DocumentClient(new Uri(ConfigurationManager.AppSettings["DocumentDbUri"]), ConfigurationManager.AppSettings["DocumentDbKey"]);
+    Database database = client.CreateDatabaseIfNotExistsAsync(new Database { Id = "MockData" }).Result;
+    DocumentCollection hazardCollection = client.CreateDocumentCollectionIfNotExistsAsync(database.SelfLink, new DocumentCollection { Id = "hazards" }).Result;
     Collector collector = new Collector
     {
         client = client,
-        collection = hazards
+        outputCollector = hazards,
+        hazardDBCollection = hazardCollection
     };
     client.CreateDocumentQuery<WiFi>(UriFactory.CreateDocumentCollectionUri("MockData", "datapoints"))
                             .Where(a => a.Time > DateTime.Now.AddMinutes(-2) && a.Type == "WiFi")
@@ -24,8 +28,9 @@ public static void Run(TimerInfo myTimer,
 
 public class Collector
 {
-    public IAsyncCollector<Circle> collection { get; set; }
+    public IAsyncCollector<CircularHazard> outputCollector { get; set; }
     public DocumentClient client { get; set; }
+    public DocumentCollection hazardDBCollection { get; set; }
 
     public void Process(WiFi datapoint)
     {
@@ -41,6 +46,6 @@ public class Collector
             Radius = 100,
             HazardLevel = datapoint.Connections / 50
         };
-        collection.AddAsync(newCircle);
+        outputCollector.AddAsync(newCircle);
     }
 }
