@@ -1,15 +1,12 @@
-﻿using System;
+﻿using Microsoft.Azure.Documents.Spatial;
+using System;
 
 abstract public class Hazard
 {
-    public int HazardLevel { get; set; }
+    public int Severity { get; set; }
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
-    public string Type
-    {
-        get
-        {
-            return GetType().Name;
-        }
-    }
+    public string Shape { get; set; }
+    public Geometry Location { get; set; }
+    public string DataType { get; set; }
 }

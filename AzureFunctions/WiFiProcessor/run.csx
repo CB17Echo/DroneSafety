@@ -39,11 +39,12 @@ public class Collector
         if (current.AsEnumerable().Any()) { return; }
         CircularHazard newCircle = new CircularHazard
         {
-            Centre = datapoint.Location,
+            Location = datapoint.Location,
             StartTime = datapoint.Time,
             EndTime = datapoint.Time.AddMinutes(1),
             Radius = 100,
-            HazardLevel = datapoint.Connections / 50
+            Severity = datapoint.Connections / 50,
+            DataType = "WiFi"
         };
         outputCollector.AddAsync(newCircle);
     }
