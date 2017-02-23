@@ -1,4 +1,4 @@
-﻿#load "../Models/Circle.csx"
+﻿#load "../Models/CircularHazard.csx"
 #load "../Models/WiFi.csx"
 #r "Microsoft.Azure.WebJobs.Extensions.DocumentDB"
 using Microsoft.Azure.Documents;
@@ -7,8 +7,7 @@ using System;
 using System.Configuration;
 
 public static void Run(TimerInfo myTimer,
-                       //[DocumentDB] DocumentClient client,
-                       [DocumentDB("MockData", "hazards")] IAsyncCollector<Circle> hazards,
+                       [DocumentDB("MockData", "hazards")] IAsyncCollector<CircularHazard> hazards,
                        TraceWriter log)
 {
     log.Info($"C# Timer trigger function executed at: {DateTime.Now}");
@@ -35,10 +34,10 @@ public class Collector
     public void Process(WiFi datapoint)
     {
         var current = client
-                .CreateDocumentQuery<Circle>(UriFactory.CreateDocumentCollectionUri("MockData", "hazards"))
-                .Where(a => a.StartTime == datapoint.Time && a.Centre == datapoint.Location);
+                .CreateDocumentQuery<CircularHazard>(hazardDBCollection.SelfLink)
+                .Where(a => a.StartTime == datapoint.Time && a.Location == datapoint.Location);
         if (current.AsEnumerable().Any()) { return; }
-        Circle newCircle = new Circle
+        CircularHazard newCircle = new CircularHazard
         {
             Centre = datapoint.Location,
             StartTime = datapoint.Time,
