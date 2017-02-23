@@ -33,17 +33,17 @@ public static void Run(TimerInfo myTimer, out WiFi[] datapoints, TraceWriter log
     DateTime time = DateTime.Now;
     datapoints = new WiFi[] {
         new WiFi {
-            Location = new Point(52.205576, 0.119219), //Waffle man, Market
+            Location = new Point(0.119219, 52.205576), //Waffle man, Market
             Connections = GetConnections(time, 1.1, log),
             Time = time
         },
         new WiFi {
-            Location = new Point(52.201987, 0.122259), //Downing site
+            Location = new Point(0.122259, 52.201987), //Downing site
             Connections = GetConnections(time, 0.9, log),
             Time = time
         },
         new WiFi {
-            Location = new Point(52.204853, 0.116809), //King's chapel
+            Location = new Point(0.1168093, 52.20485), //King's chapel
             Connections = GetConnections(time, 0.5, log),
             Time = time
         },
