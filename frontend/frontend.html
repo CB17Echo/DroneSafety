@@ -43,7 +43,7 @@
     }
   });
 
- /* 
+ /*
   for (i=0;i<4;i++){
      var entity = viewer.entities.add({
     position: Cesium.Cartesian3.fromDegrees(0.11822104454040527, 52.20531863444556),
@@ -61,7 +61,7 @@
 
   var ellipse = entity.ellipse; // For upcoming examples
 */
-  
+
 
   var heading = Cesium.Math.toRadians(0);
   var pitch = Cesium.Math.toRadians(-90);
@@ -77,19 +77,22 @@
   };
 
   var heatmap = CesiumHeatmap.create(viewer, boundingBox, {});
-  var url = "http://localhost:8080/DroneSafety/frontend/TestHeatmap.json";
-  //var url = "http://localhost:17272/api/heatmaps";
+
+  //var url = "http://localhost:8080/DroneSafety/frontend/TestHeatmap.json";
+  //var url = "http://localhost:8080/DroneSafety/frontend/TestHeatmap2.json";
+
+  var url = "http://localhost:17272/api/heatmaps";
   
   $.getJSON(url, {
           DecimalPlaceAccuracy: 4,
-          CornerOneLat : boundingBox.north,
-          CornerOneLon : boundingBox.east,
-          CornerTwoLat : boundingBox.south,
-          CornerTwoLon : boundingBox.west
+          CornerTwoLat : boundingBox.north,
+          CornerTwoLon : boundingBox.east,
+          CornerOneLat : boundingBox.south,
+          CornerOneLon : boundingBox.west
       }, function (data, testStatus, jqXHR) {
           var datapoints = [];
-          for (var i = 0; i < data.NumSources; i++) {
-              datapoints = datapoints.concat(data.Heatmaps[data.Sources[i]]);
+          for (var i = 0; i < data.numSources; i++) {
+              datapoints = datapoints.concat(data.heatmaps[data.sources[i]]);
           }
           heatmap.setWGS84Data(0, 20, datapoints);
       });
