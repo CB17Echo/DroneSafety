@@ -79,16 +79,19 @@
   var heatmap = CesiumHeatmap.create(viewer, boundingBox, {});
 
   //var url = "http://localhost:8080/DroneSafety/frontend/TestHeatmap.json";
-  //var url = "http://localhost:8080/DroneSafety/frontend/TestHeatmap2.json";
+  var url = "http://localhost:8080/DroneSafety/frontend/TestHeatmap2.json";
 
-  var url = "http://localhost:17272/api/heatmaps";
+  //var url = "http://localhost:17272/api/heatmaps";
+
+  var queryDate = Cesium.JulianDate.toDate(viewer.clock.currentTime);
   
   $.getJSON(url, {
-          DecimalPlaceAccuracy: 4,
+          NumberLonPoints: 100,
           CornerTwoLat : boundingBox.north,
           CornerTwoLon : boundingBox.east,
           CornerOneLat : boundingBox.south,
-          CornerOneLon : boundingBox.west
+          CornerOneLon : boundingBox.west,
+          Time : queryDate
       }, function (data, testStatus, jqXHR) {
           var datapoints = [];
           for (var i = 0; i < data.numSources; i++) {
