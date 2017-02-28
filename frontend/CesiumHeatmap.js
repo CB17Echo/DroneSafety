@@ -266,7 +266,7 @@ CHInstance.prototype._setWidthAndHeight = function(mbb) {
  *  data: an array of data points in heatmap coordinates and values like {x, y, value}
  */
 CHInstance.prototype.setData = function(min, max, data) {
-	if (data && data.length > 0 && min !== null && min !== false && max !== null && max !== false) {
+	if (data && min !== null && min !== false && max !== null && max !== false) {
 		this._heatmap.setData({
 			min: min,
 			max: max,
@@ -287,7 +287,7 @@ CHInstance.prototype.setData = function(min, max, data) {
  *  data: an array of data points in WGS84 coordinates and values like { x:lon, y:lat, value }
  */
 CHInstance.prototype.setWGS84Data = function(min, max, data) {
-	if (data && data.length > 0 && min !== null && min !== false && max !== null && max !== false) {
+	if (data && min !== null && min !== false && max !== null && max !== false) {
 		var convdata = [];
 		
 		for (var i = 0; i < data.length; i++) {
