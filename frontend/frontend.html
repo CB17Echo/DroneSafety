@@ -13,13 +13,56 @@
   <script src="jquery.js"></script>
   <style>
       @import url(Cesium/Widgets/widgets.css);
-      html, body, #cesiumContainer {
-          width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
+      html {
+        height: 100%;
+      }
+      body {
+        background: #000;
+        color: #eee;
+        font-family: sans-serif;
+        font-size: 9pt;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+      .fullSize {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        border: none;
+        width: 100%;
+        height: 100%;
+      }
+      #toolbar {
+          margin: 5px;
+          padding: 2px 5px;
+          position: absolute;
+          background: rgba(42, 42, 42, 0.8);
+          padding: 4px;
+          border-radius: 4px;
+      }
+      #toolbar input {
+          vertical-align: middle;
+          padding-top: 2px;
+          padding-bottom: 2px;
       }
   </style>
 </head>
 <body>
-  <div id="cesiumContainer"></div>
+  <div id="cesiumContainer" class="fullSize"></div>
+  <div id="toolbar">
+    <table><tbody data-bind="foreach: sources">
+      <tr>
+        <td><input type="checkbox" data-bind="checked: enabled"></td>
+        <td>
+          <span data-bind="text: name, visible: true"></span>
+        </td>
+      </tr>
+    </tbody></table>
+  </div>
   <script>
     Cesium.BingMapsApi.defaultKey = 'AnwQH63qS8zI8PX7aDuQDyLi_HAcDi_I5qG28z7cTOU2I2F-pbQ82cjbDMgJaYrf';
     var viewer = new Cesium.Viewer('cesiumContainer');
@@ -60,10 +103,28 @@
 
   
   //var url = "http://localhost:8080/DroneSafety/frontend/TestHeatmap.json";
-  var url = "http://teamechowebapi.azurewebsites.net/api/heatmaps";
+  //var url = "http://localhost:8080/DroneSafety/frontend/TestHeatmap2.json";
+  
   //var url = "http://localhost:17272/api/heatmaps";
+  var url = "http://teamechowebapi.azurewebsites.net/api/heatmaps";
 
-  //var url = "http://teamechowebapi.azurewebsites.net/api/heatmaps";
+
+  var viewModel = {
+    sources: Cesium.knockout.observableArray()
+  };
+
+  var toolbar = document.getElementById("toolbar");
+  Cesium.knockout.applyBindings(viewModel, toolbar);
+
+  function recompute(sources) {
+      var datapoints = [];
+      for (var i = 0; i < sources.length; i++) {
+          if(sources[i].enabled()) datapoints = datapoints.concat(sources[i].heatmap);
+      }
+      heatmap.setWGS84Data(0, 1000, datapoints);
+  }
+
+  viewModel.sources.subscribe(recompute);
   
   var queryDate = Cesium.JulianDate.toDate(viewer.clock.currentTime).getTime()/1000;
 
@@ -75,14 +136,13 @@
           CornerOneLon : boundingBox.west,
           UnixTime : queryDate
       }, function (data, testStatus, jqXHR) {
-          var datapoints = [];
+          var tmparray = [];
           for (var i = 0; i < data.numSources; i++) {
-              datapoints = datapoints.concat(data.heatmaps[data.sources[i]]);
+              tmparray[i] = {name: data.sources[i], enabled: Cesium.knockout.observable(true), heatmap: data.heatmaps[data.sources[i]]};
+              tmparray[i].enabled.subscribe(function(_x) {recompute(viewModel.sources()); console.log(i)});
           }
-          heatmap.setWGS84Data(0, 1000, datapoints);
+          viewModel.sources(tmparray);
       });
-
-  //window.alert(queryDate);
 
   </script>
 </body>
