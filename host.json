@@ -1,0 +1,5 @@
+{
+  "id": "c0744d7affe64102917080b28e10a914",
+  "functions": [ "WiFiGatherer", "WiFiProcessor" ],
+  "watchDirectories": [ "Models" ]
+}

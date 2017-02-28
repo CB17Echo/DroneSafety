@@ -1,0 +1,20 @@
+﻿{
+  "disabled": false,
+  "bindings": [
+    {
+      "name": "myTimer",
+      "type": "timerTrigger",
+      "direction": "in",
+      "schedule": "0 */1 * * * *"
+    },
+    {
+      "name": "hazards",
+      "type": "documentDB",
+      "databaseName": "MockData",
+      "collectionName": "hazards",
+      "createIfNotExists": true,
+      "connection": "DocumentDBConnectionString",
+      "direction": "out"
+    }
+  ]
+}
