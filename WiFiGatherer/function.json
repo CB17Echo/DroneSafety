@@ -10,7 +10,7 @@
     {
       "name": "datapoints",
       "type": "documentDB",
-      "databaseName": "MockData",
+      "databaseName": "prod",
       "collectionName": "datapoints",
       "createIfNotExists": true,
       "connection": "DocumentDBConnectionString",

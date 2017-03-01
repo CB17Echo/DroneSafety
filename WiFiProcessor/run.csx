@@ -7,12 +7,12 @@ using System;
 using System.Configuration;
 
 public static void Run(TimerInfo myTimer,
-                       [DocumentDB("MockData", "hazards")] IAsyncCollector<CircularHazard> hazards,
+                       [DocumentDB("prod", "hazards")] IAsyncCollector<CircularHazard> hazards,
                        TraceWriter log)
 {
     log.Info($"C# Timer trigger function executed at: {DateTime.Now}");
     DocumentClient client = new DocumentClient(new Uri(ConfigurationManager.AppSettings["DocumentDbUri"]), ConfigurationManager.AppSettings["DocumentDbKey"]);
-    Database database = client.CreateDatabaseIfNotExistsAsync(new Database { Id = "MockData" }).Result;
+    Database database = client.CreateDatabaseIfNotExistsAsync(new Database { Id = "prod" }).Result;
     DocumentCollection hazardCollection = client.CreateDocumentCollectionIfNotExistsAsync(database.SelfLink, new DocumentCollection { Id = "hazards" }).Result;
     Collector collector = new Collector
     {
@@ -20,7 +20,7 @@ public static void Run(TimerInfo myTimer,
         outputCollector = hazards,
         hazardDBCollection = hazardCollection
     };
-    client.CreateDocumentQuery<WiFi>(UriFactory.CreateDocumentCollectionUri("MockData", "datapoints"))
+    client.CreateDocumentQuery<WiFi>(UriFactory.CreateDocumentCollectionUri("prod", "datapoints"))
                             .Where(a => a.Time > DateTime.Now.AddMinutes(-2) && a.Type == "WiFi")
                             .AsParallel().ForAll(item => collector.Process(item));
 }

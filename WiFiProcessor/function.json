@@ -10,7 +10,7 @@
     {
       "name": "hazards",
       "type": "documentDB",
-      "databaseName": "MockData",
+      "databaseName": "prod",
       "collectionName": "hazards",
       "createIfNotExists": true,
       "connection": "DocumentDBConnectionString",
