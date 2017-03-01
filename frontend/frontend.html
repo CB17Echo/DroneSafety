@@ -144,7 +144,7 @@
           west:  radToDeg(rect.west)
       };
 
-      var queryDate = Cesium.JulianDate.toDate(viewer.clock.currentTime).getTime()/1000;
+      var queryDate = Math.floor(Cesium.JulianDate.toDate(viewer.clock.currentTime).getTime()/1000);
 
       $.getJSON(url, {
           NumberLonPoints: 500,
