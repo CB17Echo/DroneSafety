@@ -92,14 +92,7 @@
 
   CesiumHeatmap.defaults.useEntitiesIfAvailable = false;
 
-  var boundingBox = {
-    north: 52.230743427331866,
-    east: 0.1847076416015625,
-    south: 52.170983918129096,
-    west: 0.0707244873046875
-  };
-
-  var heatmap = CesiumHeatmap.create(viewer, boundingBox, {});
+  var heatmap;
 
   
   //var url = "http://localhost:8080/DroneSafety/frontend/TestHeatmap.json";
@@ -126,9 +119,34 @@
 
   viewModel.sources.subscribe(recompute);
   
-  var queryDate = Cesium.JulianDate.toDate(viewer.clock.currentTime).getTime()/1000;
+  function radToDeg(rads) {
+      return rads * (180 / Math.PI);
+  }
 
-  $.getJSON(url, {
+
+  function fetchdata() {
+
+      /*
+      var boundingBox = {
+          north: 52.230743427331866,
+          east: 0.1847076416015625,
+          south: 52.170983918129096,
+          west: 0.0707244873046875
+      };
+      */
+
+      var rect = viewer.camera.computeViewRectangle();
+
+      var boundingBox = {
+          north: radToDeg(rect.north),
+          east:  radToDeg(rect.east),
+          south: radToDeg(rect.south),
+          west:  radToDeg(rect.west)
+      };
+
+      var queryDate = Cesium.JulianDate.toDate(viewer.clock.currentTime).getTime()/1000;
+
+      $.getJSON(url, {
           NumberLonPoints: 500,
           CornerTwoLat : boundingBox.north,
           CornerTwoLon : boundingBox.east,
@@ -136,6 +154,8 @@
           CornerOneLon : boundingBox.west,
           UnixTime : queryDate
       }, function (data, testStatus, jqXHR) {
+          if(heatmap) heatmap.setWGS84Data(0, 0, []);
+          heatmap = CesiumHeatmap.create(viewer, boundingBox, {});
           var tmparray = [];
           for (var i = 0; i < data.numSources; i++) {
               tmparray[i] = {name: data.sources[i], enabled: Cesium.knockout.observable(true), heatmap: data.heatmaps[data.sources[i]]};
@@ -143,6 +163,12 @@
           }
           viewModel.sources(tmparray);
       });
+      console.log("FIRE");
+  }
+
+  viewer.camera.moveEnd.addEventListener(fetchdata);
+
+  fetchdata();
 
   </script>
 </body>
