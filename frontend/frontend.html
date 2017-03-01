@@ -123,6 +123,7 @@
       return rads * (180 / Math.PI);
   }
 
+var settings = {};
 
   function fetchdata() {
 
@@ -146,6 +147,13 @@
 
       var queryDate = Math.floor(Cesium.JulianDate.toDate(viewer.clock.currentTime).getTime()/1000);
 
+      function mkhandler(i) {
+          return function(x) {
+              settings[viewModel.sources()[i].name] = x;
+              recompute(viewModel.sources());
+          }
+      }
+
       $.getJSON(url, {
           NumberLonPoints: 500,
           CornerTwoLat : boundingBox.north,
@@ -158,12 +166,13 @@
           heatmap = CesiumHeatmap.create(viewer, boundingBox, {});
           var tmparray = [];
           for (var i = 0; i < data.numSources; i++) {
-              tmparray[i] = {name: data.sources[i], enabled: Cesium.knockout.observable(true), heatmap: data.heatmaps[data.sources[i]]};
-              tmparray[i].enabled.subscribe(function(_x) {recompute(viewModel.sources()); console.log(i)});
+              tmparray[i] = {name: data.sources[i], heatmap: data.heatmaps[data.sources[i]]};
+              if(settings[data.sources[i]] != undefined) tmparray[i].enabled = Cesium.knockout.observable(settings[data.sources[i]]);
+              else tmparray[i].enabled = Cesium.knockout.observable(true);
+              tmparray[i].enabled.subscribe(mkhandler(i));
           }
           viewModel.sources(tmparray);
       });
-      console.log("FIRE");
   }
 
   viewer.camera.moveEnd.addEventListener(fetchdata);
