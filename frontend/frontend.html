@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Use correct character set. -->
+  <meta charset="utf-8">
+  <!-- Tell IE to use the latest, best version. -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+  <title>Frontend</title>
+  <script src="Cesium/Cesium.js"></script>
+  <script src="CesiumHeatmap.js"></script>
+  <script src="jquery.js"></script>
+  <style>
+      @import url(Cesium/Widgets/widgets.css);
+      html {
+        height: 100%;
+      }
+      body {
+        background: #000;
+        color: #eee;
+        font-family: sans-serif;
+        font-size: 9pt;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+      .fullSize {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        border: none;
+        width: 100%;
+        height: 100%;
+      }
+      #toolbar {
+          margin: 5px;
+          padding: 2px 5px;
+          position: absolute;
+          background: rgba(42, 42, 42, 0.8);
+          padding: 4px;
+          border-radius: 4px;
+      }
+      #toolbar input {
+          vertical-align: middle;
+          padding-top: 2px;
+          padding-bottom: 2px;
+      }
+  </style>
+</head>
+<body>
+  <div id="cesiumContainer" class="fullSize"></div>
+  <div id="toolbar">
+    <table><tbody data-bind="foreach: sources">
+      <tr>
+        <td><input type="checkbox" data-bind="checked: enabled"></td>
+        <td>
+          <span data-bind="text: name, visible: true"></span>
+        </td>
+      </tr>
+    </tbody></table>
+  </div>
+  <script>
+    Cesium.BingMapsApi.defaultKey = 'AnwQH63qS8zI8PX7aDuQDyLi_HAcDi_I5qG28z7cTOU2I2F-pbQ82cjbDMgJaYrf';
+    var viewer = new Cesium.Viewer('cesiumContainer');
+    viewer.clock.currentTime = Cesium.JulianDate.fromIso8601("2017-03-01");
+    viewer.clock.multiplier = 1.0;
+    
+    var cambridge = viewer.entities.add({
+    name : 'Cambridge',
+    polygon : {
+      hierarchy : Cesium.Cartesian3.fromDegreesArray([
+        0.0707244873046875,52.230743427331866,
+        0.1847076416015625,52.230743427331866,
+        0.1847076416015625,52.170983918129096,
+        0.0707244873046875,52.170983918129096
+                                ]),
+      height : 0,
+      material : Cesium.Color.RED.withAlpha(0),
+      fill : true,
+      outline : false,
+      outlineColor : Cesium.Color.RED
+    }
+  });
+
+  var heading = Cesium.Math.toRadians(0);
+  var pitch = Cesium.Math.toRadians(-90);
+  viewer.zoomTo(cambridge, new Cesium.HeadingPitchRange(heading, pitch));
+
+  CesiumHeatmap.defaults.useEntitiesIfAvailable = false;
+
+  var heatmap;
+
+  
+  //var url = "TestHeatmap.json";
+  //var url = "TestHeatmap2.json";
+  
+  //var url = "http://localhost:17272/api/heatmaps";
+  var url = "http://teamechowebapi.azurewebsites.net/api/heatmaps";
+
+
+  var viewModel = {
+    sources: Cesium.knockout.observableArray()
+  };
+
+  var toolbar = document.getElementById("toolbar");
+  Cesium.knockout.applyBindings(viewModel, toolbar);
+
+  function recompute(sources) {
+      var datapoints = [];
+      for (var i = 0; i < sources.length; i++) {
+          if(sources[i].enabled()) datapoints = datapoints.concat(sources[i].heatmap);
+      }
+      heatmap.setWGS84Data(0, 20, datapoints);
+  }
+
+  viewModel.sources.subscribe(recompute);
+  
+  function radToDeg(rads) {
+      return rads * (180 / Math.PI);
+  }
+
+  var settings = {};
+
+  var lastQuery = 0;
+
+  function fetchdata() {
+      lastQuery = new Date().getTime();
+
+      /*
+      var boundingBox = {
+          north: 52.230743427331866,
+          east: 0.1847076416015625,
+          south: 52.170983918129096,
+          west: 0.0707244873046875
+      };
+      */
+
+      var rect = viewer.camera.computeViewRectangle();
+
+      var boundingBox = {
+          north: radToDeg(rect.north),
+          east:  radToDeg(rect.east),
+          south: radToDeg(rect.south),
+          west:  radToDeg(rect.west)
+      };
+
+      var queryDate = Math.floor(Cesium.JulianDate.toDate(viewer.clock.currentTime).getTime()/1000);
+
+      function mkhandler(i) {
+          return function(x) {
+              settings[viewModel.sources()[i].name] = x;
+              recompute(viewModel.sources());
+          }
+      }
+
+      $.getJSON(url, {
+          NumberLonPoints: 500,
+          CornerTwoLat : boundingBox.north,
+          CornerTwoLon : boundingBox.east,
+          CornerOneLat : boundingBox.south,
+          CornerOneLon : boundingBox.west,
+          UnixTime : queryDate
+      }, function (data, testStatus, jqXHR) {
+          if(heatmap) heatmap.setWGS84Data(0, 0, []);
+          heatmap = CesiumHeatmap.create(viewer, boundingBox, {});
+          var tmparray = [];
+          for (var i = 0; i < data.numSources; i++) {
+              tmparray[i] = {name: data.sources[i], heatmap: data.heatmaps[data.sources[i]]};
+              if(settings[data.sources[i]] != undefined) tmparray[i].enabled = Cesium.knockout.observable(settings[data.sources[i]]);
+              else tmparray[i].enabled = Cesium.knockout.observable(true);
+              tmparray[i].enabled.subscribe(mkhandler(i));
+          }
+          viewModel.sources(tmparray);
+      });
+  }
+
+  viewer.camera.moveEnd.addEventListener(fetchdata);
+
+  function update() {
+      var timeout = 5000
+
+      var currentTime = new Date().getTime();
+      if(currentTime-lastQuery >= timeout) {
+          fetchdata();
+          window.setTimeout(update, timeout);
+          console.log("Grab");
+      } else {
+          window.setTimeout(update, timeout-currentTime+lastQuery);
+          console.log("Schedule");
+      }
+      console.log(currentTime);
+  }
+
+  //window.setInterval(fetchdata, 5000);
+
+  //fetchdata();
+
+  update();
+
+  </script>
+</body>
+</html>
