@@ -66,7 +66,7 @@
   <script>
     Cesium.BingMapsApi.defaultKey = 'AnwQH63qS8zI8PX7aDuQDyLi_HAcDi_I5qG28z7cTOU2I2F-pbQ82cjbDMgJaYrf';
     var viewer = new Cesium.Viewer('cesiumContainer');
-    viewer.clock.currentTime = Cesium.JulianDate.fromIso8601("2017-02-02");
+    viewer.clock.currentTime = Cesium.JulianDate.fromIso8601("2017-03-01");
     viewer.clock.multiplier = 1.0;
     
     var cambridge = viewer.entities.add({
@@ -114,7 +114,7 @@
       for (var i = 0; i < sources.length; i++) {
           if(sources[i].enabled()) datapoints = datapoints.concat(sources[i].heatmap);
       }
-      heatmap.setWGS84Data(0, 1000, datapoints);
+      heatmap.setWGS84Data(0, 20, datapoints);
   }
 
   viewModel.sources.subscribe(recompute);
@@ -125,7 +125,10 @@
 
   var settings = {};
 
+  var lastQuery = 0;
+
   function fetchdata() {
+      lastQuery = new Date().getTime();
 
       /*
       var boundingBox = {
@@ -177,9 +180,26 @@
 
   viewer.camera.moveEnd.addEventListener(fetchdata);
 
-  window.setInterval(fetchdata, 5000);
+  function update() {
+      var timeout = 5000
 
-  fetchdata();
+      var currentTime = new Date().getTime();
+      if(currentTime-lastQuery >= timeout) {
+          fetchdata();
+          window.setTimeout(update, timeout);
+          console.log("Grab");
+      } else {
+          window.setTimeout(update, timeout-currentTime+lastQuery);
+          console.log("Schedule");
+      }
+      console.log(currentTime);
+  }
+
+  //window.setInterval(fetchdata, 5000);
+
+  //fetchdata();
+
+  update();
 
   </script>
 </body>
