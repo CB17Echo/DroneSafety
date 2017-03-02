@@ -182,7 +182,11 @@
   viewer.camera.moveEnd.addEventListener(fetchdata);
 
   function update() {
-      var timeout = 5000
+
+      var cesiumTimeout = Math.floor(30000/viewer.clock.multiplier);
+      var timeout = 5000;
+
+      if(cesiumTimeout > timeout) timeout = cesiumTimeout;
 
       var currentTime = new Date().getTime();
       if(currentTime-lastQuery >= timeout) {
