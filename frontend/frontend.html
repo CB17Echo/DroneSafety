@@ -123,7 +123,7 @@
       return rads * (180 / Math.PI);
   }
 
-var settings = {};
+  var settings = {};
 
   function fetchdata() {
 
@@ -176,6 +176,8 @@ var settings = {};
   }
 
   viewer.camera.moveEnd.addEventListener(fetchdata);
+
+  window.setInterval(fetchdata, 5000);
 
   fetchdata();
 
