@@ -183,7 +183,7 @@
 
   function update() {
 
-      var cesiumTimeout = Math.floor(30000/viewer.clock.multiplier);
+      var cesiumTimeout = Math.floor(Math.abs(30000/viewer.clock.multiplier));
       var timeout = 5000;
 
       if(cesiumTimeout > timeout) timeout = cesiumTimeout;
@@ -191,10 +191,10 @@
       var currentTime = new Date().getTime();
       if(currentTime-lastQuery >= timeout) {
           fetchdata();
-          window.setTimeout(update, timeout);
+          window.setTimeout(update, 5000);
           console.log("Grab");
       } else {
-          window.setTimeout(update, timeout-currentTime+lastQuery);
+          window.setTimeout(update, 5000);
           console.log("Schedule");
       }
       console.log(currentTime);
