@@ -129,15 +129,6 @@
   var queryDate = 0;
 
   function fetchdata() {
-      /*
-      var boundingBox = {
-          north: 52.230743427331866,
-          east: 0.1847076416015625,
-          south: 52.170983918129096,
-          west: 0.0707244873046875
-      };
-      */
-
       var rect = viewer.camera.computeViewRectangle();
 
       var boundingBox = {
@@ -195,10 +186,6 @@
       }
       //console.log(cesiumTime);
   }
-
-  //window.setInterval(fetchdata, 5000);
-
-  //fetchdata();
 
   update();
 
