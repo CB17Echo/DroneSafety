@@ -126,11 +126,9 @@
 
   var settings = {};
 
-  var lastQuery = 0;
+  var queryDate = 0;
 
   function fetchdata() {
-      lastQuery = new Date().getTime();
-
       /*
       var boundingBox = {
           north: 52.230743427331866,
@@ -149,7 +147,7 @@
           west:  radToDeg(rect.west)
       };
 
-      var queryDate = Math.floor(Cesium.JulianDate.toDate(viewer.clock.currentTime).getTime()/1000);
+      queryDate = Math.floor(Cesium.JulianDate.toDate(viewer.clock.currentTime).getTime()/1000);
 
       function mkhandler(i) {
           return function(x) {
@@ -183,13 +181,11 @@
 
   function update() {
 
-      var cesiumTimeout = Math.floor(Math.abs(30000/viewer.clock.multiplier));
-      var timeout = 5000;
+      var timeout = 30;
 
-      if(cesiumTimeout > timeout) timeout = cesiumTimeout;
+      var cesiumTime = Math.floor(Cesium.JulianDate.toDate(viewer.clock.currentTime).getTime()/1000);
 
-      var currentTime = new Date().getTime();
-      if(currentTime-lastQuery >= timeout) {
+      if(Math.abs(cesiumTime-queryDate) >= timeout) {
           fetchdata();
           window.setTimeout(update, 5000);
           console.log("Grab");
@@ -197,7 +193,7 @@
           window.setTimeout(update, 5000);
           console.log("Schedule");
       }
-      console.log(currentTime);
+      console.log(cesiumTime);
   }
 
   //window.setInterval(fetchdata, 5000);
