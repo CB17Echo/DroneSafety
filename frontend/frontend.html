@@ -188,12 +188,12 @@
       if(Math.abs(cesiumTime-queryDate) >= timeout) {
           fetchdata();
           window.setTimeout(update, 5000);
-          console.log("Grab");
+          //console.log("Grab");
       } else {
           window.setTimeout(update, 5000);
-          console.log("Schedule");
+          //console.log("Schedule");
       }
-      console.log(cesiumTime);
+      //console.log(cesiumTime);
   }
 
   //window.setInterval(fetchdata, 5000);
