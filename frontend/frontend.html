@@ -115,7 +115,7 @@
       for (var i = 0; i < sources.length; i++) {
           if(sources[i].enabled()) datapoints = datapoints.concat(sources[i].heatmap);
       }
-      heatmap.setWGS84Data(0, 20, datapoints);
+      heatmap.setWGS84Data(0, 200, datapoints);
   }
 
   viewModel.sources.subscribe(recompute);
